@@ -5,6 +5,9 @@ import { Product } from '../models/product.model';
 @Injectable({
   providedIn: 'root'
 })
+/**
+ * This service class simulates an API and we do not expect you to have to make any changes here.
+ */
 export class ProductService {
   private products: Product[] = [
     {
