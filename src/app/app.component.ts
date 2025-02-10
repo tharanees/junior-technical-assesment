@@ -1,14 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProductFormComponent } from './product-form/product-form.component';
+import { ProductCardComponent } from './product-card/product-card.component';
 import { ProductService } from './services/product.service';
 import { Product } from './models/product.model';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, ProductFormComponent],
+  imports: [CommonModule, ProductFormComponent, ProductCardComponent],
   templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
@@ -16,6 +16,10 @@ export class AppComponent implements OnInit {
   selectedProduct?: Product;
   products: Product[] = [];
   isLoading = false;
+  errorMessage: string = '';
+
+  // Reference to the product form so we can reset it on a successful product creation
+  @ViewChild(ProductFormComponent) productFormComponent!: ProductFormComponent;
 
   constructor(private productService: ProductService) {}
 
@@ -43,17 +47,27 @@ export class AppComponent implements OnInit {
         next: () => {
           this.loadProducts();
           this.selectedProduct = undefined;
+          this.errorMessage = '';
         },
-        // @fixme show errors to user
-        error: (error) => console.error('Error updating product:', error)
+        error: (error) => {
+          this.errorMessage = error.message || 'Error updating product';
+          console.error('Error updating product:', error);
+        }
       });
     } else {
       this.productService.createProduct(productData).subscribe({
         next: () => {
           this.loadProducts();
+          this.errorMessage = '';
+          // Reset form only on success
+          if (this.productFormComponent) {
+            this.productFormComponent.resetForm();
+          }
         },
-        // @fixme show errors to user
-        error: (error) => console.error('Error creating product:', error)
+        error: (error) => {
+          this.errorMessage = error.message || 'Error creating product';
+          console.error('Error creating product:', error);
+        }
       });
     }
   }

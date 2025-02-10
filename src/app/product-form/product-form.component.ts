@@ -37,13 +37,11 @@ export class ProductFormComponent implements OnChanges {
     }
   }
 
-  // @fixme do not reset the form if there are errors
   onSubmit(): void {
     this.isSubmitted = true;
 
     if (this.productForm.valid) {
       this.save.emit(this.productForm.value);
-      this.resetForm();
     }
   }
 

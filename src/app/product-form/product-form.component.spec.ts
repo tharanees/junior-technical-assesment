@@ -91,12 +91,25 @@ describe('ProductFormComponent', () => {
     expect(emitSpy).not.toHaveBeenCalled();
   });
 
-  xit('should emit cancel event', () => {
-    // @fixme complete this test
+  it('should emit cancel event', () => {
+    const emitSpy = jest.spyOn(component.cancel, 'emit');
+    component.onCancel();
+    expect(emitSpy).toHaveBeenCalled();
   });
-
-  xit('should reset form on cancel', () => {
-    // @fixme complete this test
+  
+  it('should reset form on cancel', () => {
+    // Pre-populate the form
+    component.productForm.setValue({
+      name: 'Test',
+      description: 'Test Description',
+      department: 'Test Department'
+    });
+    
+    component.onCancel();
+    // The form should be reset to empty values.
+    expect(component.productForm.get('name')?.value).toBe('');
+    expect(component.productForm.get('description')?.value).toBe('');
+    expect(component.productForm.get('department')?.value).toBe('');
   });
 
   it('should populate form when product input changes', () => {

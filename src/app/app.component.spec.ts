@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { ProductFormComponent } from './product-form/product-form.component';
+import { ProductCardComponent } from './product-card/product-card.component';
 import { ProductService } from './services/product.service';
 import { Product } from './models/product.model';
 import { Observable, of, throwError } from 'rxjs';
@@ -52,7 +53,7 @@ describe('AppComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [AppComponent, ProductFormComponent],
+      imports: [AppComponent, ProductFormComponent, ProductCardComponent],
       providers: [
         { provide: ProductService, useValue: mockProductService }
       ]
