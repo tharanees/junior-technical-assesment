@@ -80,7 +80,7 @@ export class ProductService {
 
     const index = this.products.findIndex(p => p.id === id);
 
-    const validationErrors = this.validateProduct(sanitizedProduct);
+    const validationErrors = this.validateProduct(sanitizedProduct, id);
     if (validationErrors.length > 0) {
       return throwError(() => ({
         status: 400,
@@ -115,7 +115,10 @@ export class ProductService {
     return of(true).pipe(delay(500));
   }
 
-  protected validateProduct(product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) {
+  protected validateProduct(
+    product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>,
+    currentProductId?: string
+  ): string[] {
     const validationErrors: string[] = [];
 
     // Since we have already sanitized the product, no extra trim() is needed here.
@@ -123,7 +126,11 @@ export class ProductService {
     if (!product.description) validationErrors.push('Description is required');
     if (!product.department) validationErrors.push('Department is required');
     
-    if (this.products.some(p => sanitizeString(p.name).toLowerCase() === product.name.toLowerCase())) {
+    // Ignore the product with currentProductId (if provided) to allow editing a product keeping its name unchanged
+    if (this.products.some(p => 
+      (currentProductId ? p.id !== currentProductId : true) &&
+      sanitizeString(p.name).toLowerCase() === product.name.toLowerCase()
+    )) {
       validationErrors.push('Product name must be unique');
     }
 

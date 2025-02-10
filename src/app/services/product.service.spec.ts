@@ -57,4 +57,39 @@ describe('ProductService', () => {
 
     tick(500);
   }));
+
+  it('should update a product successfully when the product name is unchanged', fakeAsync(() => {
+    const updateData = {
+      name: 'Personal Loan', // unchanged name
+      description: 'Updated personal loan description',
+      department: 'Lending'
+    };
+
+    service.updateProduct('1', updateData).subscribe((updatedProduct) => {
+      expect(updatedProduct).toBeDefined();
+      if (updatedProduct) {
+        expect(updatedProduct.name).toBe('Personal Loan');
+        expect(updatedProduct.description).toBe('Updated personal loan description');
+      }
+    });
+
+    tick(500);
+  }));
+
+  it('should fail to update a product when the new product name duplicates an existing product', fakeAsync(() => {
+    const updateData = {
+      name: 'First-Time Buyer Mortgage', // duplicate of product 2
+      description: 'Some description',
+      department: 'Lending'
+    };
+
+    let errorResponse: any;
+    service.updateProduct('1', updateData).subscribe({
+      next: () => {},
+      error: (err) => { errorResponse = err; }
+    });
+    tick(500);
+    expect(errorResponse).toBeDefined();
+    expect(errorResponse.errors).toContain('Product name must be unique');
+  }));
 });
