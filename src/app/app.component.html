@@ -1,11 +1,6 @@
 <!-- Product Table -->
 <main class="min-h-screen bg-gray-50 p-8">
   <div class="mx-auto max-w-7xl space-y-8">
-    <!-- Error Message -->
-    <div *ngIf="errorMessage" class="mb-4 p-2 bg-red-100 text-red-700">
-      {{ errorMessage }}
-    </div>
-    
     <!-- Product Form -->
     <app-product-form [product]="selectedProduct" (save)="onSaveProduct($event)" (cancel)="onCancelForm()" class="mb-8"></app-product-form>
 

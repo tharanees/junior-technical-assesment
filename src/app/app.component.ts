@@ -4,11 +4,13 @@ import { ProductFormComponent } from './product-form/product-form.component';
 import { ProductCardComponent } from './product-card/product-card.component';
 import { ProductService } from './services/product.service';
 import { Product } from './models/product.model';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { NotificationService } from './services/notification.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, ProductFormComponent, ProductCardComponent],
+  imports: [CommonModule, ProductFormComponent, ProductCardComponent, MatSnackBarModule],
   templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
@@ -16,12 +18,14 @@ export class AppComponent implements OnInit {
   selectedProduct?: Product;
   products: Product[] = [];
   isLoading = false;
-  errorMessage: string = '';
 
   // Reference to the product form so we can reset it on a successful product creation
   @ViewChild(ProductFormComponent) productFormComponent!: ProductFormComponent;
 
-  constructor(private productService: ProductService) {}
+  constructor(
+    private productService: ProductService,
+    private notificationService: NotificationService
+  ) {}
 
   ngOnInit(): void {
     this.loadProducts();
@@ -36,6 +40,7 @@ export class AppComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading products:', error);
+        this.notificationService.showError('Error loading products');
         this.isLoading = false;
       }
     });
@@ -47,26 +52,26 @@ export class AppComponent implements OnInit {
         next: () => {
           this.loadProducts();
           this.selectedProduct = undefined;
-          this.errorMessage = '';
+          this.notificationService.showSuccess('Product updated successfully');
         },
         error: (error) => {
-          this.errorMessage = error.message || 'Error updating product';
           console.error('Error updating product:', error);
+          this.notificationService.showError('Error updating product');
         }
       });
     } else {
       this.productService.createProduct(productData).subscribe({
         next: () => {
           this.loadProducts();
-          this.errorMessage = '';
           // Reset form only on success
           if (this.productFormComponent) {
             this.productFormComponent.resetForm();
           }
+          this.notificationService.showSuccess('Product created successfully');
         },
         error: (error) => {
-          this.errorMessage = error.message || 'Error creating product';
           console.error('Error creating product:', error);
+          this.notificationService.showError('Error creating product');
         }
       });
     }
@@ -81,9 +86,13 @@ export class AppComponent implements OnInit {
       next: (success) => {
         if (success) {
           this.loadProducts();
+          this.notificationService.showSuccess('Product deleted successfully');
         }
       },
-      error: (error) => console.error('Error deleting product:', error)
+      error: (error) => {
+        console.error('Error deleting product:', error)
+        this.notificationService.showError('Error deleting product');
+      }
     });
   }
 
