@@ -49,6 +49,13 @@ describe('ProductFormComponent', () => {
     expect(nameControl.errors).toBeNull();
   });
 
+  it('should mark the name control as invalid when only spaces are entered', () => {
+    const nameControl = component.productForm.controls['name'];
+    nameControl.setValue('   ');
+    expect(nameControl.errors).toBeTruthy();
+    expect(nameControl.errors?.['whitespace']).toBeTruthy();
+  });
+
   it('should validate description length', () => {
     const descControl = component.productForm.controls['description'];
 
@@ -57,6 +64,20 @@ describe('ProductFormComponent', () => {
 
     descControl.setValue('long enough description');
     expect(descControl.errors).toBeNull();
+  });
+
+  it('should mark the description control as invalid when only spaces are entered', () => {
+    const descControl = component.productForm.controls['description'];
+    descControl.setValue('      ');
+    expect(descControl.errors).toBeTruthy();
+    expect(descControl.errors?.['whitespace']).toBeTruthy();
+  });
+
+  it('should mark the department control as invalid when only spaces are entered', () => {
+    const deptControl = component.productForm.controls['department'];
+    deptControl.setValue('     ');
+    expect(deptControl.errors).toBeTruthy();
+    expect(deptControl.errors?.['whitespace']).toBeTruthy();
   });
 
   it('should emit save event with form data when valid', () => {

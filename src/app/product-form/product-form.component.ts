@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { noWhitespaceValidator } from '../validators/no-whitespace.validator';
 import { Product } from '../models/product.model';
 
 @Component({
@@ -19,9 +20,9 @@ export class ProductFormComponent implements OnChanges {
 
   constructor(private fb: FormBuilder) {
     this.productForm = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
-      description: ['', [Validators.required, Validators.minLength(10)]],
-      department: ['', Validators.required]
+      name: ['', [Validators.required, noWhitespaceValidator(), Validators.minLength(3)]],
+      description: ['', [Validators.required, noWhitespaceValidator(), Validators.minLength(10)]],
+      department: ['', [Validators.required, noWhitespaceValidator()]]
     });
   }
 

@@ -20,8 +20,9 @@
         <p class="mt-1 text-sm text-red-600">
           @if (productForm.get('name')?.errors?.['required']) {
             Product name is required
-          }
-          @if (productForm.get('name')?.errors?.['minlength']) {
+          } @else if (productForm.get('name')?.errors?.['whitespace']) {
+            Product name cannot be only whitespace
+          } @else if (productForm.get('name')?.errors?.['minlength']) {
             Product name must be at least 3 characters
           }
         </p>
@@ -44,8 +45,9 @@
         <p class="mt-1 text-sm text-red-600">
           @if (productForm.get('description')?.errors?.['required']) {
             Description is required
-          }
-          @if (productForm.get('description')?.errors?.['minlength']) {
+          } @else if (productForm.get('description')?.errors?.['whitespace']) {
+            Description cannot be only whitespace
+          } @else if (productForm.get('description')?.errors?.['minlength']) {
             Description must be at least 10 characters
           }
         </p>
@@ -66,7 +68,11 @@
       />
       @if (shouldShowError('department')) {
         <p class="mt-1 text-sm text-red-600">
-          Department is required
+          @if (productForm.get('department')?.errors?.['required']) {
+            Department is required
+          } @else if (productForm.get('department')?.errors?.['whitespace']) {
+            Department cannot be only whitespace
+          }
         </p>
       }
     </div>
