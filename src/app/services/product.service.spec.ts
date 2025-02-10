@@ -29,7 +29,7 @@ describe('ProductService', () => {
       department: 'Test Department'
     };
 
-    service.createProduct(newProduct).subscribe(product => {
+    service.createProduct(newProduct).subscribe((product: Product) => {
       expect(product.name).toBe(newProduct.name);
     });
     tick(500);
@@ -39,6 +39,22 @@ describe('ProductService', () => {
     service.deleteProduct('1').subscribe(success => {
       expect(success).toBe(true);
     });
+    tick(500);
+  }));
+
+  it('should sanitize product fields before validation', fakeAsync(() => {
+    const newProduct = {
+      name: '  Test Product  ',
+      description: '  Test Description  ',
+      department: '  Test Department  '
+    };
+
+    service.createProduct(newProduct).subscribe((product: Product) => {
+      expect(product.name).toBe('Test Product');
+      expect(product.description).toBe('Test Description');
+      expect(product.department).toBe('Test Department');
+    });
+
     tick(500);
   }));
 });

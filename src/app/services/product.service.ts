@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, delay, throwError } from 'rxjs';
 import { Product } from '../models/product.model';
+import { sanitizeProduct, sanitizeString } from '../utils/string-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -49,7 +50,11 @@ export class ProductService {
   }
 
   createProduct(product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Observable<Product> {
-    const validationErrors = this.validateProduct(product);
+
+    // Sanitize the product data before validation
+    const sanitizedProduct = sanitizeProduct(product);
+
+    const validationErrors = this.validateProduct(sanitizedProduct);
     if (validationErrors.length > 0) {
       return throwError(() => ({
         status: 400,
@@ -59,7 +64,7 @@ export class ProductService {
     }
 
     const newProduct: Product = {
-      ...product,
+      ...sanitizedProduct,
       id: (this.products.length + 1).toString(),
       createdAt: new Date(),
       updatedAt: new Date()
@@ -69,9 +74,13 @@ export class ProductService {
   }
 
   updateProduct(id: string, product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Observable<Product | undefined> {
+
+    // Sanitize the product data before validation
+    const sanitizedProduct = sanitizeProduct(product);
+
     const index = this.products.findIndex(p => p.id === id);
 
-    const validationErrors = this.validateProduct(product);
+    const validationErrors = this.validateProduct(sanitizedProduct);
     if (validationErrors.length > 0) {
       return throwError(() => ({
         status: 400,
@@ -89,7 +98,7 @@ export class ProductService {
 
     const updatedProduct: Product = {
       ...this.products[index],
-      ...product,
+      ...sanitizedProduct,
       updatedAt: new Date()
     };
     this.products[index] = updatedProduct;
@@ -108,10 +117,13 @@ export class ProductService {
 
   protected validateProduct(product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) {
     const validationErrors: string[] = [];
-    if (!product.name?.trim()) validationErrors.push('Name is required');
-    if (!product.description?.trim()) validationErrors.push('Description is required');
-    if (!product.department?.trim()) validationErrors.push('Department is required');
-    if (this.products.some(p => p.name.toLowerCase() === product.name?.toLowerCase()?.trim())) {
+
+    // Since we have already sanitized the product, no extra trim() is needed here.
+    if (!product.name) validationErrors.push('Name is required');
+    if (!product.description) validationErrors.push('Description is required');
+    if (!product.department) validationErrors.push('Department is required');
+    
+    if (this.products.some(p => sanitizeString(p.name).toLowerCase() === product.name.toLowerCase())) {
       validationErrors.push('Product name must be unique');
     }
 
