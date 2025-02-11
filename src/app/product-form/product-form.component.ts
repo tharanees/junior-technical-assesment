@@ -12,6 +12,7 @@ import { Product } from '../models/product.model';
 })
 export class ProductFormComponent implements OnChanges {
   @Input() product?: Product;
+  @Input() isSaving: boolean = false;
   @Output() save = new EventEmitter<Omit<Product, 'id' | 'createdAt' | 'updatedAt'>>();
   @Output() cancel = new EventEmitter<void>();
 

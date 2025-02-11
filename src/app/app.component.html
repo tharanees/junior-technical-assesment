@@ -2,7 +2,13 @@
 <main class="min-h-screen bg-gray-50 p-8">
   <div class="mx-auto max-w-7xl space-y-8">
     <!-- Product Form -->
-    <app-product-form [product]="selectedProduct" (save)="onSaveProduct($event)" (cancel)="onCancelForm()" class="mb-8"></app-product-form>
+    <app-product-form 
+      [product]="selectedProduct"
+      [isSaving]="isSaving"
+      (save)="onSaveProduct($event)"
+      (cancel)="onCancelForm()"
+      class="mb-8">
+    </app-product-form>
 
     <!-- Loading State -->
     <div *ngIf="isLoading" class="flex justify-center items-center py-8">

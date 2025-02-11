@@ -18,6 +18,7 @@ export class AppComponent implements OnInit {
   selectedProduct?: Product;
   products: Product[] = [];
   isLoading = false;
+  isSaving = false;
 
   // Reference to the product form so we can reset it on a successful product creation
   @ViewChild(ProductFormComponent) productFormComponent!: ProductFormComponent;
@@ -47,11 +48,13 @@ export class AppComponent implements OnInit {
   }
 
   onSaveProduct(productData: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): void {
+    this.isSaving = true;
     if (this.selectedProduct) {
       this.productService.updateProduct(this.selectedProduct.id, productData).subscribe({
         next: () => {
           this.loadProducts();
           this.selectedProduct = undefined;
+          this.isSaving = false;
           this.notificationService.showSuccess('Product updated successfully');
         },
         error: (error) => {
@@ -71,6 +74,7 @@ export class AppComponent implements OnInit {
           } else {
             this.notificationService.showError('Error updating product');
           }
+          this.isSaving = false;
         }
       });
     } else {
@@ -81,6 +85,7 @@ export class AppComponent implements OnInit {
           if (this.productFormComponent) {
             this.productFormComponent.resetForm();
           }
+          this.isSaving = false;
           this.notificationService.showSuccess('Product created successfully');
         },
         error: (error) => {
@@ -93,6 +98,7 @@ export class AppComponent implements OnInit {
           } else {
             this.notificationService.showError('Error creating product');
           }
+          this.isSaving = false;
         }
       });
     }

@@ -96,6 +96,7 @@ describe('AppComponent', () => {
     component.onSaveProduct(newProduct);
     tick(500);
 
+    expect(component.isSaving).toBe(false);
     expect(productService.createProduct).toHaveBeenCalledWith(newProduct);
     expect(productService.getProducts).toHaveBeenCalled();
     expect(notificationService.showSuccess).toHaveBeenCalledWith('Product created successfully');
@@ -112,6 +113,7 @@ describe('AppComponent', () => {
     component.onSaveProduct(updateData);
     tick(500);
 
+    expect(component.isSaving).toBe(false);
     expect(productService.updateProduct).toHaveBeenCalledWith('1', updateData);
     expect(productService.getProducts).toHaveBeenCalled();
     expect(component.selectedProduct).toBeUndefined();
@@ -165,6 +167,7 @@ describe('AppComponent', () => {
 
     expect(consoleErrorSpy).toHaveBeenCalled();
     expect(notificationService.showError).toHaveBeenCalledWith('Error creating product');
+    expect(component.isSaving).toBe(false);
 
     consoleErrorSpy.mockRestore();
   }));
@@ -187,6 +190,7 @@ describe('AppComponent', () => {
 
     expect(consoleErrorSpy).toHaveBeenCalled();
     expect(notificationService.showError).toHaveBeenCalledWith('Name is required');
+    expect(component.isSaving).toBe(false);
 
     consoleErrorSpy.mockRestore();
   }));
@@ -205,6 +209,7 @@ describe('AppComponent', () => {
 
     expect(consoleErrorSpy).toHaveBeenCalled();
     expect(notificationService.showError).toHaveBeenCalledWith('Error updating product');
+    expect(component.isSaving).toBe(false);
 
     consoleErrorSpy.mockRestore();
   }));
@@ -228,6 +233,7 @@ describe('AppComponent', () => {
 
     expect(consoleErrorSpy).toHaveBeenCalled();
     expect(notificationService.showError).toHaveBeenCalledWith('Product name must be unique');
+    expect(component.isSaving).toBe(false);
 
     consoleErrorSpy.mockRestore();
   }));
