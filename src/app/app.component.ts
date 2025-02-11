@@ -56,7 +56,21 @@ export class AppComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error updating product:', error);
-          this.notificationService.showError('Error updating product');
+
+          /**
+           * NOTE: Can replace this with separate toast notifications that stack instead of rendering a single Angular Material’s snack bar 
+           * with all validation errors joined with a `,`.
+           */
+
+          // Provide meaningful feedback depending on the validation error
+          if (error.status === 400 && error.errors && error.errors.length > 0) {
+            const validationMessage = error.errors.join(', ');
+            this.notificationService.showError(validationMessage);
+          } else if (error.status === 404) {
+            this.notificationService.showError(error.message || 'Product not found');
+          } else {
+            this.notificationService.showError('Error updating product');
+          }
         }
       });
     } else {
@@ -71,7 +85,14 @@ export class AppComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error creating product:', error);
-          this.notificationService.showError('Error creating product');
+
+          // Provide meaningful feedback depending on the validation error
+          if (error.status === 400 && error.errors && error.errors.length > 0) {
+            const validationMessage = error.errors.join(', ');
+            this.notificationService.showError(validationMessage);
+          } else {
+            this.notificationService.showError('Error creating product');
+          }
         }
       });
     }

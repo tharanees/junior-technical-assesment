@@ -152,7 +152,7 @@ describe('AppComponent', () => {
     consoleErrorSpy.mockRestore();
   }));
 
-  it('should handle error when creating product', fakeAsync(() => {
+  it('should handle generic error when creating product', fakeAsync(() => {
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
     productService.createProduct.mockReturnValueOnce(throwError(() => new Error('Test error')));
 
@@ -169,7 +169,29 @@ describe('AppComponent', () => {
     consoleErrorSpy.mockRestore();
   }));
 
-  it('should handle error when updating product', fakeAsync(() => {
+  it('should handle validation error when creating product', fakeAsync(() => {
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+    const validationError = {
+      status: 400,
+      message: 'Validation failed',
+      errors: ['Name is required']
+    };
+    productService.createProduct.mockReturnValueOnce(throwError(() => validationError));
+
+    component.onSaveProduct({
+      name: '',
+      description: 'Test',
+      department: 'Test'
+    });
+    tick(500);
+
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    expect(notificationService.showError).toHaveBeenCalledWith('Name is required');
+
+    consoleErrorSpy.mockRestore();
+  }));
+
+  it('should handle generic error when updating product', fakeAsync(() => {
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
     productService.updateProduct.mockReturnValueOnce(throwError(() => new Error('Test error')));
 
@@ -183,6 +205,29 @@ describe('AppComponent', () => {
 
     expect(consoleErrorSpy).toHaveBeenCalled();
     expect(notificationService.showError).toHaveBeenCalledWith('Error updating product');
+
+    consoleErrorSpy.mockRestore();
+  }));
+
+  it('should handle validation error when updating product', fakeAsync(() => {
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+    const validationError = {
+      status: 400,
+      message: 'Validation failed',
+      errors: ['Product name must be unique']
+    };
+    productService.updateProduct.mockReturnValueOnce(throwError(() => validationError));
+
+    component.selectedProduct = mockProducts[0];
+    component.onSaveProduct({
+      name: 'Duplicate Name',
+      description: 'Test',
+      department: 'Test'
+    });
+    tick(500);
+
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    expect(notificationService.showError).toHaveBeenCalledWith('Product name must be unique');
 
     consoleErrorSpy.mockRestore();
   }));
